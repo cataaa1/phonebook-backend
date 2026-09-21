@@ -2,6 +2,6 @@
 
 Backend de la agenda telefónica desarrollado para Full Stack Open.
 
-Online application: https://fullstackopen-1mht.onrender.com
+Online application: https://phonebook-backend-al6z.onrender.com/api/persons
 
 Pendiente de despliegue.

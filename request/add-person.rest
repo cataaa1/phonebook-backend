@@ -1,7 +1,7 @@
-POST http://localhost:3001/api/persons
+POST https://phonebook-backend-al6z.onrender.com/api/persons
 Content-Type: application/json
 
 {
-    "name": "Alanss Turing",
-    "number": "010-987654"
+  "name": "Catalina",
+  "number": "223-555555"
 }
