@@ -1,7 +1,7 @@
 require('dotenv').config()
 const Person = require('./models/person')
 const express = require('express')
-
+const morgan = require('morgan')
 const app = express()
 
 const requestLogger = (request, response, next) => {
@@ -21,8 +21,8 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-app.use(requestLogger)
 app.use(express.json())
+app.use(requestLogger)
 app.use(express.static('dist'))
 
 morgan.token('body', (req) => {return req.method === 'POST' ? JSON.stringify(req.body) : ''})
@@ -42,7 +42,7 @@ app.get('/api/info', (request, response) => {
     })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response,next) => {
     Person.findById(request.params.id).then(person => {
       if (person){
         response.json(person)
@@ -53,7 +53,7 @@ app.get('/api/persons/:id', (request, response) => {
     .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request,response) => {
+app.delete('/api/persons/:id', (request,response,next) => {
     Person.findByIdAndDelete(request.params.id)
     .then((result) =>{
       response.status(204).end()
@@ -80,6 +80,27 @@ app.post('/api/persons', (request,response) => {
     })
 })
 
+app.put('/api/persons/:id',(request,response,next) => {
+  const body = request.body
+  const person = {
+    name: body.name,
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(request.params.id,person,{new:true})
+  .then(updatedPerson => {
+    response.json(updatedPerson)
+  })
+  .catch(error => next(error))
+
+})
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 
