@@ -1,6 +1,9 @@
+require('dotenv').config()
+const Person = require('./models/person')
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+
 
 const app = express()
 
@@ -36,23 +39,26 @@ let persons = [
 ]
 
 app.get('/api/persons', (request, response) => {
+  Person.find({}).then(persons => {
     response.json(persons)
+  })
 })
 
 app.get('/api/info', (request, response) => {
-    response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}`) 
+    Person.countDocuments().then(count => {
+        response.send(`<p>Phonebook has info for ${count} people</p><p>${Date()}`) 
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(p => p.id === id)
-
-    if (person){
+    Person.findById(request.params.id).then(person => {
+      if (person){
         response.json(person)
-    }
-    else{
+      }
+      else{
         response.status(404).end()
-    }
+      }
+    })
 })
 
 app.delete('/api/persons/:id', (request,response) => {
